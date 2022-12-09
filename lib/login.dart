@@ -1,27 +1,4 @@
-// import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-// import 'package:formz/formz.dart';
-
-// enum PasswordInputError {
-//   noDigit,
-//   toShort,
-//   noUppercase,
-// }
-
-// class PasswordInput extends FormzInput<String, PasswordInputError> {
-//   const PasswordInput.pure() : super.pure('');
-//   const PasswordInput.dirty([String value = '']) : super.dirty(value);
-
-//   @override
-//   PasswordInputError? validator(String value) {
-//     if (value.length < 8) return PasswordInputError.toShort;
-//     if (value.contains(RegExp(r'[0-9]'))) return PasswordInputError.noDigit;
-//     if (value.contains(RegExp(r'[A-Z]'))) return PasswordInputError.noUppercase;
-
-//     return null;
-//   }
-// }
 
 class LoginPageScreen extends StatefulWidget {
   const LoginPageScreen({Key? key}) : super(key: key);
@@ -32,30 +9,19 @@ class LoginPageScreen extends StatefulWidget {
 
 class _LoginPageScreenState extends State<LoginPageScreen> {
   final _formkey = GlobalKey<FormState>();
+  final passwordController = TextEditingController();
+  final userNameController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    passwordController.dispose();
+    userNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // return BlocListener<LoginBloc, LoginState>(
-    //   listener: (context, state) {
-    //     if (_formkey.currentState!.validate()) {
-    //       var status = state.status;
-    //       if (status is SubmittingSuccess) {
-    //         _snackBar(context, "LogIn Success");
-    //         print("going to profi");
-    //         if (status.role == 'ADMIN') {
-    //           context.go('/admin');
-    //         } else {
-    //           context.go("/userProfile");
-    //         }
-    //       }
-    //       if (status is SubmittingFailure) {
-    //         var msg = state.status;
-    //         _snackBar(context, status.exception);
-    //         // context.read<LoginBloc>().add(const LoginSubmitted());
-    //       }
-    //     }
-    //   },
-    //   child:
     return Scaffold(
       body: Form(
         key: _formkey,
@@ -89,11 +55,12 @@ class _LoginPageScreenState extends State<LoginPageScreen> {
                     ),
                     const Text("Login to continue"),
                     const SizedBox(height: 30),
-                    _UserIdInput(),
+                    _UserIdInput(userNameController: userNameController),
                     const Padding(padding: EdgeInsets.all(12)),
-                    _PasswordInput(),
+                    _PasswordInput(passwordController: passwordController),
                     const Padding(padding: EdgeInsets.all(12)),
-                    _loginButton(_formkey, context),
+                    _loginButton(_formkey, context, passwordController,
+                        userNameController),
 
                     const SizedBox(height: 30),
                   ],
@@ -124,12 +91,13 @@ class _LoginPageScreenState extends State<LoginPageScreen> {
 }
 
 class _UserIdInput extends StatelessWidget {
+  var userNameController;
+
+  _UserIdInput({Key? key, this.userNameController}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    // return BlocBuilder<LoginBloc, LoginState>(
-    //   buildWhen: (previous, current) => previous.userId != current.userId,
-    //   builder: (context, state) {
     return TextFormField(
+      controller: userNameController,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         if (value!.length < 4) {
@@ -156,13 +124,13 @@ class _UserIdInput extends StatelessWidget {
         border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20))),
       ),
-      // onChanged: (userId) =>
-      // context.read<LoginBloc>().add(LoginUserIdChanged(userId)),
     );
   }
 }
 
 class _PasswordInput extends StatefulWidget {
+  _PasswordInput({Key? key, this.passwordController}) : super(key: key);
+  var passwordController;
   @override
   State<_PasswordInput> createState() => _PasswordInputState();
 }
@@ -172,10 +140,8 @@ class _PasswordInputState extends State<_PasswordInput> {
 
   @override
   Widget build(BuildContext context) {
-    // return BlocBuilder<LoginBloc, LoginState>(
-    //   buildWhen: (previous, current) => previous.password != current.password,
-    //   builder: (context, state) {
     return TextFormField(
+      controller: widget.passwordController,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         if (value!.length < 8) {
@@ -185,34 +151,25 @@ class _PasswordInputState extends State<_PasswordInput> {
         } else if (!value.contains(RegExp(r'[A-Z]'))) {
           return "Password should container uppercase";
         }
-        // if (value!.length < 8) {
-        //   return "Invalid password";
-        // }
-        //  else {
+
         return null;
         // }
       },
-      //  =>
-      //     state.isPasswordValid ? null : "Invalid Password",
       cursorColor: Colors.black,
       maxLength: 20,
       obscureText: _passwordVisible,
       decoration: InputDecoration(
-        // errorText: state.password ? 'invalid password' : null,
         icon: Icon(Icons.lock),
-
         labelText: 'password',
         labelStyle: TextStyle(
           color: Color.fromARGB(255, 17, 17, 17),
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            // Based on passwordVisible state choose the icon
             _passwordVisible ? Icons.visibility_off : Icons.visibility,
             color: Theme.of(context).primaryColorDark,
           ),
           onPressed: () {
-            // Update the state i.e. toogle the state of passwordVisible variable
             setState(() {
               _passwordVisible = !_passwordVisible;
             });
@@ -222,33 +179,22 @@ class _PasswordInputState extends State<_PasswordInput> {
             borderRadius: BorderRadius.all(Radius.circular(20))),
       ),
     );
-    // onChanged: (password) =>
-    // context.read<LoginBloc>().add(LoginPasswordChanged(password)),
   }
 }
 
-Widget _loginButton(formkey, context) {
-  // @override
-  // Widget build(BuildContext context) {
-  // return BlocBuilder<LoginBloc, LoginState>(
-  //   buildWhen: (previous, current) => previous.status != current.status,
-  //   builder: (context, state) {
-  //     return state.status is FormSubmitting
-  //         ? const CircularProgressIndicator()
-  //         :
+Widget _loginButton(formkey, context, passwordController, userNameController) {
+  var isSubmit = false;
   return ElevatedButton(
     onPressed: () {
       if (formkey.currentState!.validate()) {
-        // If the form is valid, display a snackbar. In the real world,
-        // you'd often call a server or save the information in a database.
+        print(passwordController.text);
+        print(userNameController.text);
+        isSubmit = true;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Processing Data')),
+          const SnackBar(
+              backgroundColor: Colors.blue, content: Text('Processing Data')),
         );
       }
-      // if (_formkey.currentState.validate()) {
-      //   context.read<LoginBloc>().add(const LoginSubmitted());
-      //   var status = state.status;
-      // }
     },
     style: ElevatedButton.styleFrom(
       minimumSize: const Size.fromHeight(50),
@@ -256,21 +202,6 @@ Widget _loginButton(formkey, context) {
         borderRadius: BorderRadius.circular(30.0),
       ),
     ),
-    child: const Text("SIGN IN"),
+    child: isSubmit ? const CircularProgressIndicator() : const Text("SIGN IN"),
   );
-  // },
-  // );
 }
-// // }
-
-// void _snackBar(context, message) {
-//   Color color;
-//   message == "LogIn Success" ? color = Colors.blue : color = Colors.red;
-//   final snackBar = SnackBar(
-//     backgroundColor: color,
-//     content: Text('$message'),
-//   );
-
-//   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-//   // context.go("/signUp");
-// }
