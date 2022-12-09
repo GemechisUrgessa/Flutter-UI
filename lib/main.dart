@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui/signUp.dart';
-import 'package:flutter_ui/views/home.dart';
-
-import 'login.dart';
+import 'package:flutter_ui/screens/HomeScreen.dart';
 
 // void main() {
 //   runApp(MaterialApp(
@@ -32,7 +29,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SignUpPageScreen(),
+      home: const HomeScreen(),
     );
   }
 }
