@@ -159,9 +159,9 @@ class _PasswordInputState extends State<_PasswordInput> {
       maxLength: 20,
       obscureText: _passwordVisible,
       decoration: InputDecoration(
-        icon: Icon(Icons.lock),
+        icon: const Icon(Icons.lock),
         labelText: 'password',
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: Color.fromARGB(255, 17, 17, 17),
         ),
         suffixIcon: IconButton(
@@ -175,7 +175,7 @@ class _PasswordInputState extends State<_PasswordInput> {
             });
           },
         ),
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20))),
       ),
     );
@@ -183,13 +183,11 @@ class _PasswordInputState extends State<_PasswordInput> {
 }
 
 Widget _loginButton(formkey, context, passwordController, userNameController) {
-  var isSubmit = false;
   return ElevatedButton(
     onPressed: () {
       if (formkey.currentState!.validate()) {
         print(passwordController.text);
         print(userNameController.text);
-        isSubmit = true;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               backgroundColor: Colors.blue, content: Text('Processing Data')),
@@ -202,6 +200,6 @@ Widget _loginButton(formkey, context, passwordController, userNameController) {
         borderRadius: BorderRadius.circular(30.0),
       ),
     ),
-    child: isSubmit ? const CircularProgressIndicator() : const Text("SIGN IN"),
+    child: const Text("SIGN IN"),
   );
 }
