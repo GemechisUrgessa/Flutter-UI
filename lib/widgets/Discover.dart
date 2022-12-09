@@ -17,7 +17,6 @@ class _DiscoverState extends State<Discover> {
             crossAxisCount: 2,
             crossAxisSpacing: 10.0,
             mainAxisSpacing: 10.0,
-            shrinkWrap: true,
             children: List.generate(carModels.length, (index) {
               var car = carModels[index];
               return CarCard(car: car);

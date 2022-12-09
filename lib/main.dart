@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui/views/home.dart';
+import 'package:flutter_ui/screens/CarScreen.dart';
 
-import 'login.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -10,7 +9,7 @@ void main() {
         appBarTheme: AppBarTheme(
           backgroundColor: Color.fromARGB(255, 15, 192, 44),
         )),
-    home: new Home(),
+    home: new CarScreen(),
     debugShowCheckedModeBanner: false,
   ));
 }
